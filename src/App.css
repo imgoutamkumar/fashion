@@ -1,0 +1,81 @@
+/* thin modern scrollbar */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.25);
+  border-radius: 20px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 120, 0.7);
+}
+
+/* firefox */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120,120,120,0.4) transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120,120,120,0.4) transparent;
+}
+
+
+/* ===== Modern Premium Scrollbar ===== */
+.premium-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.premium-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0; /* top-bottom spacing */
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    rgba(120,120,120,0.25),
+    rgba(80,80,80,0.35)
+  );
+  border-radius: 999px;
+  transition: all 0.3s ease;
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    to bottom,
+    rgba(90,90,90,0.6),
+    rgba(60,60,60,0.8)
+  );
+}
+
+/* Firefox */
+.premium-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120,120,120,0.4) transparent;
+}
+
+
+.hover-scrollbar::-webkit-scrollbar {
+  width: 0px;
+}
+
+.hover-scrollbar:hover::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hover-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.35);
+  border-radius: 999px;
+}

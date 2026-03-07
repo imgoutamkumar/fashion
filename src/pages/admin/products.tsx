@@ -46,37 +46,37 @@ const Products = () => {
             accessorKey: "name",
             header: "Product Name",
         },
-        {
-            accessorKey: "images",
-            header: "Product Images",
-            cell: ({ row }: any) => {
-                const images = row.original.images
-                const productId = row.original.id
-                return (
-                    <AvatarGroup
-                    className="cursor-pointer"
-                     onClick={() => {
-                        setIsImageDialogOpen(true)
-                        setSelectedImages(images)
-                        setSelectedProductId(productId)
-                        setIsImageDialogOpen(true)
-                    }}>
-                        {images.slice(0, 3).map((img: any, i: number) => (
-                            <Avatar key={i}>
-                                <AvatarImage src={img?.url} />
-                                <AvatarFallback>P</AvatarFallback>
-                            </Avatar>
-                        ))}
+        // {
+        //     accessorKey: "images",
+        //     header: "Product Images",
+        //     cell: ({ row }: any) => {
+        //         const images = row.original.images
+        //         const productId = row.original.id
+        //         return (
+        //             <AvatarGroup
+        //             className="cursor-pointer"
+        //              onClick={() => {
+        //                 setIsImageDialogOpen(true)
+        //                 setSelectedImages(images)
+        //                 setSelectedProductId(productId)
+        //                 setIsImageDialogOpen(true)
+        //             }}>
+        //                 {images.slice(0, 3).map((img: any, i: number) => (
+        //                     <Avatar key={i}>
+        //                         <AvatarImage src={img?.url} />
+        //                         <AvatarFallback>P</AvatarFallback>
+        //                     </Avatar>
+        //                 ))}
 
-                        {images.length > 3 && (
-                            <AvatarGroupCount>
-                                +{images.length - 3}
-                            </AvatarGroupCount>
-                        )}
-                    </AvatarGroup>
-                )
-            },
-        },
+        //                 {images.length > 3 && (
+        //                     <AvatarGroupCount>
+        //                         +{images.length - 3}
+        //                     </AvatarGroupCount>
+        //                 )}
+        //             </AvatarGroup>
+        //         )
+        //     },
+        // },
         {
             accessorKey: "brand.name",
             header: "Brand Name",
@@ -86,13 +86,9 @@ const Products = () => {
             header: "Status",
         },
         {
-            accessorKey: "price",
-            header: "Price",
+            accessorKey: "base_price",
+            header: "Base Price",
         },
-        {
-            accessorKey: "discount_percent",
-            header: "Discount Percent",
-        }
     ];
 
     return (
@@ -101,12 +97,12 @@ const Products = () => {
                 <Button className="w-fit mb-4" onClick={() => navigate('/admin/product/new')}> <CirclePlus className="mr-2" /> Add New Product</Button>
                 {/* producttable */}
                 <ProductTable columns={columns} data={products} isFetching={isFetching} />
-                <ReorderImagesModal
+                {/* <ReorderImagesModal
                     open={isImageDialogOpen}
                     setOpen={setIsImageDialogOpen}
                     images={selectedImages}
                     productId={selectedProductId}
-                />
+                /> */}
                 <div className="mt-4">
                     <ProductPagination page={page}
                         limit={limit}

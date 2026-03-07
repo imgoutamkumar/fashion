@@ -10,6 +10,7 @@ import { CustomRadioButton } from '@/customComponent/radiobutton'
 import { CustomSelect } from '@/customComponent/select'
 import { CustomTextarea } from '@/customComponent/textarea'
 import { buildTree } from '@/helper/commonFunction'
+import { useGetAttributesQuery } from '@/redux/services/attributeApi'
 import { useCreateBrandMutation, useGetBrandsQuery } from '@/redux/services/brandApi'
 import { useCreateCategoryMutation, useGetCategoriesQuery } from '@/redux/services/categoryApi'
 import { useCreateProductMutation } from '@/redux/services/productApi'
@@ -91,6 +92,7 @@ const NewProduct = () => {
     const [createProduct, { isLoading }] = useCreateProductMutation()
     const [createBrand, { isLoading: isBrandCreating }] = useCreateBrandMutation()
     const [createCategory, { isLoading: isCategoryCreating }] = useCreateCategoryMutation()
+    const {data: attributes} = useGetAttributesQuery()
     const { data: categories, isLoading: isCategoryLoading } = useGetCategoriesQuery()
     const { data: brands, isLoading: isBrandLoading } = useGetBrandsQuery()
 
@@ -246,7 +248,7 @@ const NewProduct = () => {
                                         <CustomInput control={form.control} name="productname" label="Product Name" />
                                         <CustomSelect control={form.control} name="brand_id" label="Brands" options={brandOptions} isLoading={isBrandLoading} />
                                         {/* <CustomSelect control={form.control} name="category_id" label="Category" options={categoryOptions} isLoading={isCategoryLoading} /> */}
-                                        <MultiLevelSelect tree={categoryTree} onChange={(val) => form.setValue("category_id", val)} title="Select Category" />
+                                        <MultiLevelSelect tree={categoryTree} label='Category' onChange={(val) => form.setValue("category_id", val)} title="Select Category" />
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                                         <CustomInput control={form.control} name="description" label="Description" />

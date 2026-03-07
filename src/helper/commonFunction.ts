@@ -2,7 +2,7 @@
 
 type tree = {
   ID: string
-  name: string
+  Name: string
   ParentID: string | null
   children?: tree[]
 }

@@ -1,3 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+type tree = {
+  ID: string
+  name: string
+  ParentID: string | null
+  children?: tree[]
+}
+
 export const getPaginationRange = (
   currentPage: number,
   totalPages: number,
@@ -32,4 +41,29 @@ export const getPaginationRange = (
   }
 
   return range
+}
+
+
+export const buildTree = (nestedTree :tree[]) => {
+  console.log("nestedTree",nestedTree)
+  const map = {} as Record<string, tree & { children: tree[] }>
+  const roots :tree[] = []
+
+  // Step 1: create map
+  nestedTree?.forEach((nt:tree) => {
+      map[nt?.ID] = { ...nt, children: [] }
+  })
+
+  // Step 2: link children
+  nestedTree?.forEach((nt:tree) => {
+    if (nt?.ParentID) {
+      if (map[nt?.ParentID]) {
+        map[nt?.ParentID].children.push(map[nt?.ID])
+      }
+    } else {
+      roots.push(map[nt?.ID])
+    }
+  })
+console.log("map",map)
+  return roots
 }

@@ -1,18 +1,21 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FileUpload } from '@/customComponent/fileupload'
 import { CustomInput } from '@/customComponent/input'
+import { MultiLevelSelect } from '@/customComponent/MultilevelSelect'
 import { CustomRadioButton } from '@/customComponent/radiobutton'
 import { CustomSelect } from '@/customComponent/select'
 import { CustomTextarea } from '@/customComponent/textarea'
+import { buildTree } from '@/helper/commonFunction'
 import { useCreateBrandMutation, useGetBrandsQuery } from '@/redux/services/brandApi'
 import { useCreateCategoryMutation, useGetCategoriesQuery } from '@/redux/services/categoryApi'
 import { useCreateProductMutation } from '@/redux/services/productApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Star, Trash2, UploadCloud, X } from 'lucide-react'
+import { useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import * as z from "zod"
 
@@ -40,21 +43,10 @@ const returnnableOptions = [
 ]
 
 
-const categoryOptions = [
-    { value: "clothing", label: "Clothing" },
-    { value: "electronics", label: "Electronics" },
-    { value: "furniture", label: "Furniture" },
-    { value: "books", label: "Books" },
-    { value: "toys", label: "Toys" },
-    { value: "beauty", label: "Beauty" },
-    { value: "sports", label: "Sports" },
-    { value: "automotive", label: "Automotive" },
-]
-
 const attributeValueOptions = [
     { value: "550e8400-e29b-41d4-a716-446655440000", label: "M" },
     { value: "6fa459ea-ee8a-4ca4-894e-db77e160355e", label: "L" },
-    { value: "9b2c4f6a-8c2e-4d3a-9f6c-1a2b3c4d5e6f", label: "Red" },
+    { value: "c3c86e2f-a495-42f6-be16-d9d3b8395d30", label: "Red" },
     { value: "c1a9b8d7-1234-4abc-9def-567890abcdef", label: "Blue" },
 ]
 
@@ -87,7 +79,13 @@ const newProductFormSchema = z.object({
     variants: z.array(variantSchema).min(1, "At least one variant is required")
 })
 
+const Steps = [
+    { id: "1", name: "Basic Details" },
+    { id: "2", name: "Variants Details" },
+]
+
 const NewProduct = () => {
+    const [currentStep, setCurrentStep] = useState(1)
     type NewProductFormInput = z.input<typeof newProductFormSchema>
     type NewProductFormOutput = z.output<typeof newProductFormSchema>
     const [createProduct, { isLoading }] = useCreateProductMutation()
@@ -95,11 +93,13 @@ const NewProduct = () => {
     const [createCategory, { isLoading: isCategoryCreating }] = useCreateCategoryMutation()
     const { data: categories, isLoading: isCategoryLoading } = useGetCategoriesQuery()
     const { data: brands, isLoading: isBrandLoading } = useGetBrandsQuery()
-   
+
     console.log("Categories:", categories)
     console.log("Brands:", brands)
-     const brandOptions = brands?.data?.map((brand:any) => ({ value: brand?.ID, label: brand?.Name })) || []
-    const categoryOptions = categories?.data?.map((category) => ({ value: category?.id, label: category?.Name })) || []
+    const brandOptions = brands?.data?.map((brand: any) => ({ value: brand?.ID, label: brand?.Name })) || []
+    // const categoryOptions = categories?.data?.map((category) => ({ value: category?.id, label: category?.Name })) || []
+    const categoryTree = buildTree(categories?.data)
+    console.log("categoryTree", categoryTree)
     const form = useForm<NewProductFormInput>({
         resolver: zodResolver(newProductFormSchema),
         mode: "onTouched",
@@ -190,35 +190,63 @@ const NewProduct = () => {
             newProductFormSchema.parse(values)
 
         const formData = buildProductFormData(parsedValues)
-
+        console.log("formData", formData)
         await createProduct(formData)
+    }
+
+    // Navigation handlers
+    const handleNext = () => {
+        if (currentStep < Steps.length) setCurrentStep((prev) => prev + 1)
+    }
+
+    const handlePrevious = () => {
+        if (currentStep > 1) setCurrentStep((prev) => prev - 1)
     }
 
     return (
         <div className='w-full h-full flex flex-col p-4 '>
             <h3 className='text-2xl font-bold pb-4'>Create New Product</h3>
-            <Form {...form}>
-                <form
-                    className="flex flex-col w-full gap-4"
-                    onSubmit={form.handleSubmit(onNewProductFormSubmit)}
-                >
-                    <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
 
-                        {/* TAB HEADER */}
-                        <TabsList className="grid w-full grid-cols-2 bg-muted mb-4 top-0 z-10">
-                            <TabsTrigger value="general">General Details</TabsTrigger>
-                            <TabsTrigger value="variants">Variants Details</TabsTrigger>
-                        </TabsList>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Create an Account</CardTitle>
+                    <CardDescription>Step {currentStep} of {Steps?.length}</CardDescription>
 
-                        {/* ================= GENERAL TAB ================= */}
-                        <TabsContent value="general" className='flex-1 h-full overflow-y-auto'>
-                            <Card>
-                                <CardContent className="space-y-4 pt-6">
+                    {/* Stepper Indicator */}
+                    <div className="flex justify-around mt-4 relative">
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 -z-10"></div>
+                        <div
+                            className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary transition-all duration-300 -z-10"
+                            style={{ width: `${((currentStep - 1) / (Steps.length - 1)) * 100}%` }}
+                        ></div>
 
+                        {Steps?.map((step: any) => (
+                            <div
+                                key={step?.id}
+                                className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors ${currentStep >= step.id
+                                    ? "bg-[#2d72e8] border-primary text-primary-foreground"
+                                    : "bg-background border-slate-300 text-slate-500"
+                                    }`}
+                            >
+                                {step?.id}
+                            </div>
+                        ))}
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                    <Form {...form}>
+                        <form
+                            id="product-form"
+                            className="flex flex-col w-full gap-4"
+                            onSubmit={form.handleSubmit(onNewProductFormSubmit)}
+                        >
+                            {currentStep === 1 && (
+                                <>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                                         <CustomInput control={form.control} name="productname" label="Product Name" />
                                         <CustomSelect control={form.control} name="brand_id" label="Brands" options={brandOptions} isLoading={isBrandLoading} />
-                                        <CustomSelect control={form.control} name="category_id" label="Category" options={categoryOptions} isLoading={isCategoryLoading} />
+                                        {/* <CustomSelect control={form.control} name="category_id" label="Category" options={categoryOptions} isLoading={isCategoryLoading} /> */}
+                                        <MultiLevelSelect tree={categoryTree} onChange={(val) => form.setValue("category_id", val)} title="Select Category" />
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                                         <CustomInput control={form.control} name="description" label="Description" />
@@ -236,49 +264,70 @@ const NewProduct = () => {
                                         name="description"
                                         label="Description"
                                     />
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
+                                </>
+                            )}
 
-                        {/* ================= VARIANTS TAB ================= */}
-                        <TabsContent value="variants" className='flex-1 h-full overflow-y-auto'>
-                            {fields.map((field, index) => (
-                                <VariantItem
-                                    key={field.id}
-                                    control={form.control}
-                                    index={index}
-                                    remove={remove}
-                                    setValue={form.setValue}
-                                />
-                            ))}
+                            {currentStep === 2 && (
+                                <>
+                                    {
+                                        fields.map((field, index) => (
+                                            <VariantItem
+                                                key={field?.id}
+                                                control={form.control}
+                                                index={index}
+                                                remove={remove}
+                                                setValue={form.setValue}
+                                            />
+                                        ))}
 
-                            <Button
-                                type="button"
-                                onClick={() => append({
-                                    sku: '',
-                                    price: '',
-                                    stock: '',
-                                    attributes: [{ type: '', value_id: '' }],
-                                    images: []
-                                })}
-                            >
-                                + Add Variant
-                            </Button>
-                        </TabsContent>
-                    </Tabs>
+                                    < Button
+                                        type="button"
+                                        onClick={() => append({
+                                            sku: '',
+                                            price: '',
+                                            stock: '',
+                                            attributes: [{ type: '', value_id: '' }],
+                                            images: []
+                                        })}
+                                    >
+                                        + Add Variant
+                                    </Button>
+                                </>
+                            )
+                            }
 
-                    <div className='flex justify-end my-2'>
+                        </form>
+                    </Form>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                    <Button
+                        variant="outline"
+                        onClick={handlePrevious}
+                        disabled={currentStep === 1}
+                        type='button'
+                    >
+                        Previous
+                    </Button>
+
+                    {currentStep < Steps.length ? (
+                        <Button type='button' onClick={handleNext}>Next</Button>
+                    ) : (
                         <Button
+                            form="product-form"
                             className="cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-fit"
                             // disabled={!form.formState.isValid || isLoading}
                             type="submit">
                             {isLoading ? "Creating..." : "Create Product"}
                         </Button>
-                    </div>
+                    )}
+                </CardFooter>
+            </Card >
 
-                </form>
-            </Form>
-        </div>
+            <div className='flex justify-end my-2'>
+
+            </div>
+
+        </div >
     )
 
 }

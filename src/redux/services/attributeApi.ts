@@ -7,9 +7,9 @@ type ApiResponse<T = unknown> = {
   message: string
 }
 
-export const categoryApi = createApi({
-    reducerPath: 'categoryApi',
-    tagTypes: ['Category'],
+export const attributeApi = createApi({
+    reducerPath: 'attributeApi',
+    tagTypes: ['Attribute'],
     baseQuery: fetchBaseQuery({
         baseUrl: 'https://golang-fashion-backend.onrender.com',
         prepareHeaders: (headers, { getState }) => {
@@ -23,30 +23,30 @@ export const categoryApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        createCategory: builder.mutation<ApiResponse, { name: string}>({
+        createAttribute: builder.mutation<ApiResponse, { name: string}>({
             query: (credentials) => ({
-                url: '/products/categories',
+                url: '/products/attribute',
                 method: 'POST',
                 body: credentials,
             }),
-            invalidatesTags: ['Category'],
+            invalidatesTags: ['Attribute'],
         }),
-        getCategories: builder.query<any, void>({
+        getAttributes: builder.query<any, void>({
             query: () => ({
-                url: '/products/category/all',
+                url: '/products/attribute/all',
                 method: 'GET',
             }),
-            providesTags: ['Category'],
+            providesTags: ['Attribute'],
         }),
-        deleteCategory: builder.mutation<void, string>({
+        deleteAttribute: builder.mutation<void, string>({
             query: (id) => ({
-                url: `/products/categories/${id}`,
+                url: `/products/attribute/${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Category'],
+            invalidatesTags: ['Attribute'],
         }),
         
     }),
 })
 
-export const { useCreateCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation } = categoryApi
+export const { useCreateAttributeMutation, useGetAttributesQuery, useDeleteAttributeMutation } = attributeApi

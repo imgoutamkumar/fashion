@@ -12,6 +12,17 @@ type AuthResponse = ApiResponse<null> & {
   token: string
 }
 
+type LoginResponse = {
+  status: string
+  token: string
+  message: string
+  data: {
+    role: string
+    id: string
+    email: string
+  } | null
+}
+
 export const authApi = createApi({
     reducerPath: 'authApi',
     tagTypes: ['User'],
@@ -35,7 +46,7 @@ export const authApi = createApi({
                 body: credentials,
             }),
         }),
-        login: builder.mutation<AuthResponse, { email: string; password: string }>({
+        login: builder.mutation<LoginResponse, { email: string; password: string }>({
             query: (credentials) => ({
                 url: '/users/login',
                 method: 'POST',

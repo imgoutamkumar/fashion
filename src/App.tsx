@@ -38,7 +38,7 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path='cart' element={<Cart />} />
           <Route path='products' element={<AllProducts />} />
-          <Route path="product/:id" element={<ProductDetails />} />
+          <Route path="product/:productId" element={<ProductDetails />} />
         </Route>
       </Route>
        <Route element={<RoleGuard allowedRoles={["admin"]} />}>

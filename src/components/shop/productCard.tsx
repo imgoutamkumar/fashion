@@ -6,8 +6,6 @@ import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Heart } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-
 
 type Props = {
   product: any;
@@ -16,23 +14,15 @@ type Props = {
 
 const ProductCard = ({ product, handleCardClick }: Props) => {
   const [liked, setLiked] = useState(false)
-  const navigate = useNavigate()
   const discountedPrice =
-    (product?.price -
-      (product?.price * product?.discount_percent) / 100).toFixed(2);
-
-
-  const handleProductCardClick = (id: string) => {
-    console.log("handleProductCardClick clicked")
-    navigate(`/shop/product/${id}`)
-  }
-
+    (product?.variants[0]?.original_price -
+      (product?.variants[0]?.original_price * product?.variants[0]?.discount_percent) / 100).toFixed(2);
   return (
-    <Card className="group relative w-64 sm:w-60 p-0 h-[320px] rounded-sm overflow-hidden cursor-pointer transition" onClick={handleCardClick}>
+    <Card className="group relative w-64 sm:w-60 p-0 h-[320px] rounded-sm overflow-hidden cursor-pointer transition"    onClick={() => handleCardClick()}>
       {/* <div className="absolute inset-0 z-30 aspect-video bg-black/35" /> */}
       <img
-        src={product?.images[0]?.url}
-        alt={product?.name}
+        src={product?.variants[0]?.images[0]?.url}
+        alt={product?.variants[0]?.sku}
         className="relative w-full h-full object-cover rounded-sm 
   transition-transform duration-300 group-hover:scale-105"
       />
@@ -48,13 +38,13 @@ bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-sm">
         </div>
         <div className="flex justify-between">
           <div>
-            <p className="text-red-600 line-through text-[13px]"> ₹{product?.price}</p>
+            <p className="text-red-600 line-through text-[13px]"> ₹{product?.variants[0]?.original_price}</p>
             <h3 className="text-white font-bold text-[1rem]">
               ₹{discountedPrice}
             </h3>
           </div>
           <div className="flex items-end">
-            <Badge className="text-red-500 h-fit" variant="secondary">{product?.discount_percent}% OFF</Badge>
+            <Badge className="text-red-500 h-fit" variant="secondary">{product?.variants[0]?.discount_percent}% OFF</Badge>
           </div>
 
         </div>

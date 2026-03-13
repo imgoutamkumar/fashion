@@ -41,6 +41,7 @@ const ProductTable = ({ data, columns, isFetching }: DataTableProps<any, any>) =
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getRowCanExpand: (row) => row.original.variants?.length > 0,
   })
 
   return (
@@ -72,16 +73,55 @@ const ProductTable = ({ data, columns, isFetching }: DataTableProps<any, any>) =
           ) :
             table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {row.getIsExpanded() && (
+                    <TableRow>
+                      <TableCell colSpan={columns.length}>
+                        <div className="p-4 bg-muted rounded-md">
+
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>SKU</TableHead>
+                                <TableHead>Price</TableHead>
+                                <TableHead>Stock</TableHead>
+                                <TableHead>Original Price</TableHead>
+                                <TableHead>Discount %</TableHead>
+                                <TableHead>Final Price</TableHead>
+                              </TableRow>
+                            </TableHeader>
+
+                            <TableBody>
+                              {row.original.variants.map((variant: any) => (
+                                <TableRow key={variant.id}>
+                                  <TableCell>{variant.sku}</TableCell>
+                                  <TableCell>{variant.price}</TableCell>
+                                  <TableCell>{variant.stock}</TableCell>
+                                  <TableCell>{variant.original_price}</TableCell>
+                                  <TableCell>{variant.discount_percent}</TableCell>
+                                  <TableCell>{variant.final_price}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+
+                          </Table>
+
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                </>
               ))
             ) : (
               <TableRow>

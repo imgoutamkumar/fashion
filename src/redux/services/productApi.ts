@@ -15,7 +15,9 @@ type Product = {
     is_cod_available: boolean
     description: string
     short_description: string
+    variants: []
     product_images: File[],
+    attributes: any
 }
 
 type ApiResponse<T = any> = {
@@ -60,6 +62,21 @@ export const productApi = createApi({
         getProducts: builder.query<PaginatedResponse<Product>, GetProductsParams>({
             query: (params) => {
                 return { url: '/products/all', method: 'GET', params: params };
+            },
+            providesTags: (result: any) =>
+                result?.data
+                    ? [
+                        { type: 'Products', id: 'LIST' },
+                        ...result.data.map((product: any) => ({
+                            type: 'Products',
+                            id: product.id,
+                        })),
+                    ]
+                    : [{ type: 'Products', id: 'LIST' }],
+        }),
+         getAllProductsForAdmin: builder.query<PaginatedResponse<Product>, GetProductsParams>({
+            query: (params) => {
+                return { url: '/products/allProducts', method: 'GET', params: params };
             },
             providesTags: (result: any) =>
                 result?.data
@@ -132,6 +149,7 @@ export const productApi = createApi({
 
 export const {
     useGetProductsQuery,
+    useGetAllProductsForAdminQuery,
     useGetProductByIdQuery,
     useCreateProductMutation,
     useUpdateProductMutation,

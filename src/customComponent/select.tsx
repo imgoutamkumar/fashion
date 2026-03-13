@@ -13,9 +13,10 @@ interface CustomSelectProps<T extends FieldValues> {
   numericMode?: "int" | "decimal"
   options?: { value: string; label: string }[],
   isLoading?: boolean
+  onSelectValueChange?: (value: string) => void
 }
 
-export const CustomSelect = <T extends FieldValues>({ control, name, label, placeholder, options,isLoading }: CustomSelectProps<T>) => {
+export const CustomSelect = <T extends FieldValues>({ control, name, label, placeholder, options, isLoading, onSelectValueChange }: CustomSelectProps<T>) => {
   return (
     <FormField
       control={control}
@@ -24,10 +25,15 @@ export const CustomSelect = <T extends FieldValues>({ control, name, label, plac
         <FormItem className="mb-4 gap-0">
           <FormLabel className="mb-2">{label}</FormLabel>
           <FormControl>
-            <Select {...field}  value={field.value ?? ''}
-          onValueChange={field.onChange} disabled={isLoading}>
+            <Select {...field} value={field.value ?? ''}
+              onValueChange={(value) => {
+                field.onChange(value)
+                onSelectValueChange?.(value)
+              }}
+              disabled={isLoading}
+            >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={placeholder || "Select an option"}/>
+                <SelectValue placeholder={placeholder || "Select an option"} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>

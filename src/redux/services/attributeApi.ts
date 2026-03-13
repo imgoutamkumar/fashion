@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-type ApiResponse<T = unknown> = {
-  data: T
-  status: string
-  message: string
+type ApiResponse<T = any> = {
+    data: T
+    status: string
+    message: string
 }
 
 export const attributeApi = createApi({
@@ -23,7 +23,7 @@ export const attributeApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        createAttribute: builder.mutation<ApiResponse, { name: string}>({
+        createAttribute: builder.mutation<ApiResponse, { name: string }>({
             query: (credentials) => ({
                 url: '/products/attribute',
                 method: 'POST',
@@ -31,12 +31,15 @@ export const attributeApi = createApi({
             }),
             invalidatesTags: ['Attribute'],
         }),
-        getAttributes: builder.query<any, void>({
+        getAttributes: builder.query<ApiResponse, void>({
             query: () => ({
                 url: '/products/attribute/all',
                 method: 'GET',
             }),
             providesTags: ['Attribute'],
+        }),
+        getAttributeValueById: builder.query<ApiResponse, string>({
+            query: (attributeId) => ({ url: `/products/attribute-value/${attributeId}`, method: 'GET' }),
         }),
         deleteAttribute: builder.mutation<void, string>({
             query: (id) => ({
@@ -45,8 +48,9 @@ export const attributeApi = createApi({
             }),
             invalidatesTags: ['Attribute'],
         }),
-        
+
     }),
 })
 
-export const { useCreateAttributeMutation, useGetAttributesQuery, useDeleteAttributeMutation } = attributeApi
+export const { useCreateAttributeMutation, useGetAttributesQuery, useDeleteAttributeMutation, useGetAttributeValueByIdQuery,
+    useLazyGetAttributeValueByIdQuery } = attributeApi

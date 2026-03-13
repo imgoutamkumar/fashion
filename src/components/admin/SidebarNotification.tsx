@@ -3,6 +3,7 @@ import * as React from "react"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Link } from "react-router-dom"
 
 export function SidebarNotification() {
   const [isVisible, setIsVisible] = React.useState(true)
@@ -27,27 +28,23 @@ export function SidebarNotification() {
             {/* <Logo size={42} className="-mt-1" /> */}
             <div>
               Welcome to{" "}
-              <a 
-                href="https://shadcnstore.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <Link
+              to={"/admin/dashboard"}
                 className="text-primary hover:underline"
               >
-                ShadcnStore
-              </a>
+                Fashion Admin Portal
+              </Link>
             </div>
           </h3>
           <p className="text-sm text-muted-foreground dark:text-neutral-400 leading-relaxed">
-            Explore our premium Shadcn UI{" "}
-            <a 
-              href="https://shadcnstore.com/blocks" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            Explore our premium Admin{" "}
+            <Link 
+             to={"/admin/dashboard"}
               className="text-primary underline"
             >
-              blocks
-            </a>{" "}
-            to build your next project faster.
+              Fashion
+            </Link>{" "}
+            portal to manage your shop easily.
           </p>
         </div>
       </CardContent>

@@ -43,6 +43,7 @@ const Register = () => {
 
   const onRegisterFormSubmit = async (values: z.infer<typeof registerFormSchema>) => {
     await register(values)
+    form.reset()
   }
   return (
     <div className="max-w-sm w-full">

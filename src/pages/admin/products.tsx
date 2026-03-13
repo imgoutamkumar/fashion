@@ -4,8 +4,8 @@ import ReorderImagesModal from "@/components/admin/popups/ReorderImagesModal";
 import ProductTable from "@/components/admin/productTable"
 import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useGetProductsQuery } from "@/redux/services/productApi";
-import { CirclePlus } from "lucide-react";
+import { useGetAllProductsForAdminQuery, useGetProductsQuery } from "@/redux/services/productApi";
+import { ChevronDown, ChevronRight, CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ const Products = () => {
         price: [0, 5000],
         discount: 0
     })
-    const { data, isLoading, isFetching } = useGetProductsQuery({
+    const { data, isLoading, isFetching } = useGetAllProductsForAdminQuery({
         page,
         limit,
         searchTerm,
@@ -38,6 +38,21 @@ const Products = () => {
     }
     const products = data?.data ?? []
     const columns = [
+        {
+            id: "expander",
+            header: "",
+            cell: ({ row }: any) => (
+                row.getCanExpand() ? (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={row.getToggleExpandedHandler()}
+                    >
+                        {row.getIsExpanded() ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </Button>
+                ) : null
+            )
+        },
         {
             accessorKey: "id",
             header: "Product ID",
@@ -94,7 +109,7 @@ const Products = () => {
     return (
         <div className="w-full p-4">
             <div className="flex flex-col w-full">
-                <Button className="w-fit mb-4" onClick={() => navigate('/admin/product/new')}> <CirclePlus className="mr-2" /> Add New Product</Button>
+                <Button className="w-fit mb-4 cursor-pointer" onClick={() => navigate('/admin/product/new')}> <CirclePlus className="mr-2" />Add New Product</Button>
                 {/* producttable */}
                 <ProductTable columns={columns} data={products} isFetching={isFetching} />
                 {/* <ReorderImagesModal

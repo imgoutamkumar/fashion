@@ -10,14 +10,14 @@ import { CustomRadioButton } from '@/customComponent/radiobutton'
 import { CustomSelect } from '@/customComponent/select'
 import { CustomTextarea } from '@/customComponent/textarea'
 import { buildTree } from '@/helper/commonFunction'
-import { useGetAttributesQuery } from '@/redux/services/attributeApi'
+import { useGetAttributesQuery, useGetAttributeValueByIdQuery, useLazyGetAttributeValueByIdQuery } from '@/redux/services/attributeApi'
 import { useCreateBrandMutation, useGetBrandsQuery } from '@/redux/services/brandApi'
 import { useCreateCategoryMutation, useGetCategoriesQuery } from '@/redux/services/categoryApi'
 import { useCreateProductMutation } from '@/redux/services/productApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Star, Trash2, UploadCloud, X } from 'lucide-react'
 import { useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import * as z from "zod"
 
 const currencyOptions = [
@@ -41,14 +41,6 @@ const codAvailableOptions = [
 const returnnableOptions = [
     { value: "true", label: "True" },
     { value: "false", label: "False" },
-]
-
-
-const attributeValueOptions = [
-    { value: "550e8400-e29b-41d4-a716-446655440000", label: "M" },
-    { value: "6fa459ea-ee8a-4ca4-894e-db77e160355e", label: "L" },
-    { value: "c3c86e2f-a495-42f6-be16-d9d3b8395d30", label: "Red" },
-    { value: "c1a9b8d7-1234-4abc-9def-567890abcdef", label: "Blue" },
 ]
 
 const attributeSchema = z.object({
@@ -81,8 +73,8 @@ const newProductFormSchema = z.object({
 })
 
 const Steps = [
-    { id: "1", name: "Basic Details" },
-    { id: "2", name: "Variants Details" },
+    { id: "1", name: "Basic Details", formFieldname: ["productname", "brand_id", "category_id", "currency", "status"] as const },
+    { id: "2", name: "Variants Details", formFieldname: ["variants"] as const },
 ]
 
 const NewProduct = () => {
@@ -92,16 +84,13 @@ const NewProduct = () => {
     const [createProduct, { isLoading }] = useCreateProductMutation()
     const [createBrand, { isLoading: isBrandCreating }] = useCreateBrandMutation()
     const [createCategory, { isLoading: isCategoryCreating }] = useCreateCategoryMutation()
-    const {data: attributes} = useGetAttributesQuery()
     const { data: categories, isLoading: isCategoryLoading } = useGetCategoriesQuery()
     const { data: brands, isLoading: isBrandLoading } = useGetBrandsQuery()
 
-    console.log("Categories:", categories)
-    console.log("Brands:", brands)
     const brandOptions = brands?.data?.map((brand: any) => ({ value: brand?.ID, label: brand?.Name })) || []
-    // const categoryOptions = categories?.data?.map((category) => ({ value: category?.id, label: category?.Name })) || []
+
     const categoryTree = buildTree(categories?.data)
-    console.log("categoryTree", categoryTree)
+
     const form = useForm<NewProductFormInput>({
         resolver: zodResolver(newProductFormSchema),
         mode: "onTouched",
@@ -133,12 +122,11 @@ const NewProduct = () => {
     const buildProductFormData = (
         values: z.infer<typeof newProductFormSchema>
     ) => {
-        console.log("FINAL VALUES:", values)
 
         const formData = new FormData()
 
         // ---------------- PRODUCT ----------------
-        formData.append("productname", values.productname)
+        formData.append("name", values.productname)
         formData.append("brand_id", values.brand_id)
         formData.append("category_id", values.category_id)
         formData.append("currency", values.currency)
@@ -192,12 +180,15 @@ const NewProduct = () => {
             newProductFormSchema.parse(values)
 
         const formData = buildProductFormData(parsedValues)
-        console.log("formData", formData)
         await createProduct(formData)
     }
 
     // Navigation handlers
-    const handleNext = () => {
+    const handleNext = async () => {
+        const formfields = Steps[currentStep - 1].formFieldname
+        const isValid = await form.trigger(formfields)
+        if (!isValid) return
+
         if (currentStep < Steps.length) setCurrentStep((prev) => prev + 1)
     }
 
@@ -211,7 +202,7 @@ const NewProduct = () => {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Create an Account</CardTitle>
+                    <CardTitle>Create a product</CardTitle>
                     <CardDescription>Step {currentStep} of {Steps?.length}</CardDescription>
 
                     {/* Stepper Indicator */}
@@ -283,6 +274,7 @@ const NewProduct = () => {
                                         ))}
 
                                     < Button
+                                        variant={'outline'}
                                         type="button"
                                         onClick={() => append({
                                             sku: '',
@@ -292,7 +284,7 @@ const NewProduct = () => {
                                             images: []
                                         })}
                                     >
-                                        + Add Variant
+                                        + Add More Variant
                                     </Button>
                                 </>
                             )
@@ -306,13 +298,16 @@ const NewProduct = () => {
                         variant="outline"
                         onClick={handlePrevious}
                         disabled={currentStep === 1}
-                        type='button'
+                        type="button"
                     >
                         Previous
                     </Button>
 
                     {currentStep < Steps.length ? (
-                        <Button type='button' onClick={handleNext}>Next</Button>
+                        <Button type="button" onClick={(e) => {
+                            e.preventDefault()
+                            handleNext()
+                        }}>Next</Button>
                     ) : (
                         <Button
                             form="product-form"
@@ -340,6 +335,35 @@ const VariantItem = ({ control, index, remove, setValue }) => {
         name: `variants.${index}.attributes`
     })
 
+    const images = useWatch({
+  control,
+  name: `variants.${index}.images`
+})
+const [attributeValueoptions,setAttributeValueOptions] = useState<
+Record<string, any[]>
+>({}) 
+
+    const { data: attributes } = useGetAttributesQuery()
+    const attributeOptions = attributes?.data?.map((attribute: any) => ({ value: attribute?.ID, label: attribute?.Name })) || []
+    const [triggerGetAttributeValues, { data: attributeValues, isLoading }] = useLazyGetAttributeValueByIdQuery()
+    // const attributeValueoptions = attributeValues?.data?.map((attributeValue: any) => ({ value: attributeValue?.id, label: attributeValue?.value })) || []
+
+    const triggerAttributeApi = (attributeId:string,i:number)=>{
+          triggerGetAttributeValues(attributeId).then(res=>{
+        const options = res.data?.data?.map((v:any)=>({
+            value:v.id,
+            label:v.value
+        })) || []
+
+        const key = `${index}-${i}`
+
+        setAttributeValueOptions(prev => ({
+            ...prev,
+            [key]: options
+        }))
+    })
+    }
+
     return (
         <Card className="border-2 border-dashed">
             <CardHeader className="flex flex-row justify-between items-center">
@@ -354,7 +378,7 @@ const VariantItem = ({ control, index, remove, setValue }) => {
                     size="sm"
                     onClick={() => remove(index)}
                 >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4 shadow-md cursor-pointer" />
                 </Button>
             </CardHeader>
 
@@ -381,36 +405,40 @@ const VariantItem = ({ control, index, remove, setValue }) => {
                     />
                 </div>
                 <div>
-                    {fields.map((attr, i) => (
+                    {fields.map((attr, i) => {
+                        const key = `${index}-${i}`
+                       return (
                         <div key={attr.id} className="relative grid grid-cols-3 gap-3">
                             <CustomSelect
                                 control={control}
                                 name={`variants.${index}.attributes.${i}.type`}
                                 label="Type"
-                                options={[
-                                    { value: 'size', label: 'Size' },
-                                    { value: 'color', label: 'Color' }
-                                ]}
+                                options={attributeOptions}
+                                onSelectValueChange={(attributeId) => {
+                                    triggerAttributeApi(attributeId,i)
+                                }}
                             />
 
                             <CustomSelect
                                 control={control}
                                 name={`variants.${index}.attributes.${i}.value_id`}
                                 label="Value ID"
-                                options={attributeValueOptions}
+                                options={attributeValueoptions[key]}
                             />
 
-                            <Button variant="destructive" onClick={() => removeAttr(i)} className='absolute right-0 top-0 size-6 rounded-full cursor-pointer'>
+                            <Button variant="destructive" onClick={() => removeAttr(i)} className='absolute right-0 top-0 size-6 rounded-full cursor-pointer shadow-md'>
                                 <X size={14} />
                             </Button>
                         </div>
-                    ))}
+                    )}
+                    )}
 
                     <Button
+                        variant={'outline'}
                         type="button"
                         onClick={() => append({ type: '', value_id: '' })}
                     >
-                        + Add Attribute
+                        + Add More Attribute
                     </Button>
                 </div>
 
@@ -419,10 +447,13 @@ const VariantItem = ({ control, index, remove, setValue }) => {
                     <label className="text-sm font-bold">Variant Images</label>
 
                     <FileUpload
+                    inputId={`variant-upload-${index}`}
                         multiple
                         accept="image/*"
+                        selectedFiles={images}
                         onChange={(files) => {
                             setValue(`variants.${index}.images`, files, { shouldDirty: true })
+                            console.log("files",files)
                         }}
                     />
                 </div>

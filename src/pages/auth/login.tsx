@@ -37,8 +37,7 @@ const Login = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const response = await login(loginState).unwrap();
-    console.log('Login response data:', response);
-    console.log("token:", response?.token);
+    form.reset()
     if (response && response?.status.toLowerCase() == "success" && !isLoading) {
       dispatch(setToken(response?.token))
       dispatch(setRole(response?.data?.role))

@@ -17,19 +17,16 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    // "strict": true,
     "strict": false,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
+
+    /* Path alias */
     "paths": {
       "@/*": ["./src/*"]
-    },
+    }
   },
   "include": ["src"]
 }

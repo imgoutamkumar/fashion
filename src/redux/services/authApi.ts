@@ -2,7 +2,7 @@
 // import { setToken } from '@/redux/authSlice'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-type ApiResponse<T = unknown> = {
+type ApiResponse<T = any> = {
   data: T
   status: string
   message: string

@@ -139,8 +139,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <div className="flex items-center justify-center">
         <Checkbox
           checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            table.getIsAllPageRowsSelected()
+              ? true
+              : table.getIsSomePageRowsSelected()
+                ? "indeterminate"
+                : false
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
@@ -337,7 +340,7 @@ const DashboardDataTable = ({
   pastPerformanceData?: z.infer<typeof schema>[]
   keyPersonnelData?: z.infer<typeof schema>[]
   focusDocumentsData?: z.infer<typeof schema>[]
-})=> {
+}) => {
   const [data, setData] = React.useState(() => initialData)
   const [pastPerformance, setPastPerformance] = React.useState(() => pastPerformanceData)
   const [keyPersonnel, setKeyPersonnel] = React.useState(() => keyPersonnelData)
@@ -526,14 +529,14 @@ const DashboardDataTable = ({
   }
 
   // Component for rendering table content
-  const TableContent = ({ 
-    currentTable, 
-    currentDataIds, 
-    handleCurrentDragEnd 
-  }: { 
-    currentTable: ReturnType<typeof useReactTable<z.infer<typeof schema>>>, 
-    currentDataIds: UniqueIdentifier[], 
-    handleCurrentDragEnd: (event: DragEndEvent) => void 
+  const TableContent = ({
+    currentTable,
+    currentDataIds,
+    handleCurrentDragEnd
+  }: {
+    currentTable: ReturnType<typeof useReactTable<z.infer<typeof schema>>>,
+    currentDataIds: UniqueIdentifier[],
+    handleCurrentDragEnd: (event: DragEndEvent) => void
   }) => (
     <>
       <div className="overflow-hidden rounded-lg border">
@@ -554,9 +557,9 @@ const DashboardDataTable = ({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     )
                   })}
@@ -763,9 +766,9 @@ const DashboardDataTable = ({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </TableHead>
                       )
                     })}
@@ -878,17 +881,17 @@ const DashboardDataTable = ({
         value="past-performance"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <TableContent 
+        <TableContent
           currentTable={pastPerformanceTable}
           currentDataIds={pastPerformanceIds}
           handleCurrentDragEnd={handlePastPerformanceDragEnd}
         />
       </TabsContent>
-      <TabsContent 
-        value="key-personnel" 
+      <TabsContent
+        value="key-personnel"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <TableContent 
+        <TableContent
           currentTable={keyPersonnelTable}
           currentDataIds={keyPersonnelIds}
           handleCurrentDragEnd={handleKeyPersonnelDragEnd}
@@ -898,7 +901,7 @@ const DashboardDataTable = ({
         value="focus-documents"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <TableContent 
+        <TableContent
           currentTable={focusDocumentsTable}
           currentDataIds={focusDocumentsIds}
           handleCurrentDragEnd={handleFocusDocumentsDragEnd}

@@ -37,15 +37,19 @@ const Login = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const response = await login(loginState).unwrap();
+    if (!response || response.status.toLowerCase() !== "success") return;
     form.reset()
-    if (response && response?.status.toLowerCase() == "success" && !isLoading) {
-      dispatch(setToken(response?.token))
-      dispatch(setRole(response?.data?.role))
-      if (response?.data?.role === "admin") {
+    dispatch(setToken(response.token))
+    if (response.data) {
+      dispatch(setRole(response.data.role))
+
+      if (response.data.role === "admin") {
         navigate("/admin/dashboard")
-      } else if (response?.data?.role === "user") {
+      }
+      else if (response.data.role === "user") {
         navigate("/shop/home")
-      } else {
+      }
+      else {
         navigate("/")
       }
     }

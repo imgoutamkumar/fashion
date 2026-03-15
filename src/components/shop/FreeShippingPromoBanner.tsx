@@ -10,8 +10,8 @@ interface FreeShippingPromoBannerProps {
 }
 
 const FreeShippingPromoBanner = ({
-  threshold = 75,
-  currentAmount = 45,
+  threshold = 3000,
+  currentAmount = 2300,
   className,
 }: FreeShippingPromoBannerProps) => {
   const progress = Math.min((currentAmount / threshold) * 100, 100);
@@ -30,7 +30,7 @@ const FreeShippingPromoBanner = ({
           <div className="flex items-center gap-3">
             <p className="shrink-0 text-sm">
               Spend{" "}
-              <span className="font-semibold">${remaining.toFixed(2)}</span>{" "}
+              <span className="font-semibold">₹{remaining.toFixed(2)}</span>{" "}
               more for <span className="font-semibold">FREE shipping</span>
             </p>
             <Progress

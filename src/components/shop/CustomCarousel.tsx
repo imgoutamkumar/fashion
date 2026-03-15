@@ -9,7 +9,7 @@ const CustomCarousel = () => {
   return (
     <Carousel
       dir="ltr"
-      className="w-full max-w-[12rem] sm:max-w-xs"
+      className="w-full sm:max-w-xs"
       opts={{
         direction: "ltr",
       }}

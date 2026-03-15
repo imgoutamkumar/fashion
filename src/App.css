@@ -8,7 +8,7 @@
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 20px;
 }
 
@@ -19,7 +19,7 @@
 /* firefox */
 .thin-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(120,120,120,0.4) transparent;
+  scrollbar-color: rgba(120, 120, 120, 0.4) transparent;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar {
@@ -28,9 +28,8 @@
 
 .sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(120,120,120,0.4) transparent;
+  scrollbar-color: rgba(120, 120, 120, 0.4) transparent;
 }
-
 
 /* ===== Modern Premium Scrollbar ===== */
 .premium-scrollbar::-webkit-scrollbar {
@@ -45,8 +44,8 @@
 .premium-scrollbar::-webkit-scrollbar-thumb {
   background: linear-gradient(
     to bottom,
-    rgba(120,120,120,0.25),
-    rgba(80,80,80,0.35)
+    rgba(120, 120, 120, 0.25),
+    rgba(80, 80, 80, 0.35)
   );
   border-radius: 999px;
   transition: all 0.3s ease;
@@ -55,17 +54,16 @@
 .premium-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     to bottom,
-    rgba(90,90,90,0.6),
-    rgba(60,60,60,0.8)
+    rgba(90, 90, 90, 0.6),
+    rgba(60, 60, 60, 0.8)
   );
 }
 
 /* Firefox */
 .premium-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(120,120,120,0.4) transparent;
+  scrollbar-color: rgba(120, 120, 120, 0.4) transparent;
 }
-
 
 .hover-scrollbar::-webkit-scrollbar {
   width: 0px;
@@ -76,6 +74,7 @@
 }
 
 .hover-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 999px;
 }
+

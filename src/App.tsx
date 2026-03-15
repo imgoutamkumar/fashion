@@ -15,6 +15,7 @@ import AllProducts from './pages/shop/products'
 import ProductDetails from './pages/shop/productDetails'
 import RoleGuard from './guards/RoleGuard'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import Checkout from './pages/shop/Checkout'
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
           <Route path='cart' element={<Cart />} />
           <Route path='products' element={<AllProducts />} />
           <Route path="product/:productId" element={<ProductDetails />} />
+          <Route path="checkout" element={<Checkout />} />
         </Route>
       </Route>
        <Route element={<RoleGuard allowedRoles={["admin"]} />}>

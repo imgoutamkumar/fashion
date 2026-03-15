@@ -19,9 +19,9 @@ const CustomCarousel = () => {
           <CarouselItem key={index}>
             <div className="p-1">
               <Card dir="ltr">
-                <CardContent className="flex aspect-square items-center justify-center p-6">
+                <CardContent className="flex items-center justify-center p-6">
                   <span className="text-4xl font-semibold">
-                    hi-{index}
+                    slide:{index}
                   </span>
                 </CardContent>
               </Card>
